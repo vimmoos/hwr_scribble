@@ -1,5 +1,8 @@
 import numpy as np
 from itertools import tee
+from typing import Iterable
+import torch as th
+from numpy.typing import NDArray
 
 
 def sel_keys(d, ks):
@@ -22,3 +25,23 @@ def pairwise(iterable):
     a, b = tee(iterable)
     next(b, None)
     return zip(a, b)
+
+
+def batcher(
+    iterable: Iterable,
+    batch_size: int = 64,
+    appender: callable = lambda acc, y: [y] if acc is None else acc + [y],
+):
+    batch = None
+    for el in iterable:
+        batch = appender(batch, el)
+        if len(batch) == batch_size:
+            yield batch
+            batch = None
+    if batch is not None:
+        yield batch
+
+
+def to_tensor(img: NDArray):
+    """Given an image (H,W) returns a normalized (between [0,1])tensor (1,H,W)"""
+    return th.Tensor(img / 255).unsqueeze(0)

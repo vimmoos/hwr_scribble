@@ -1,6 +1,6 @@
 import torch as th
 from tqdm import trange
-from network.conf import BasicTrainEvalTask
+from network import BasicTrainEvalTask
 from utils.misc import get_all_labels
 from collections import Counter
 from network.utils import (

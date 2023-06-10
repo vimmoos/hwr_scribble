@@ -11,6 +11,7 @@ import torch as th
 import wandb
 from pathlib import Path
 from utils.misc import get_all_labels
+import os
 
 
 def train_val_test_split(
@@ -175,10 +176,13 @@ def train_and_eval_model(conf: BasicTrainEvalTask):
 
 
 def load_model(model, model_str="drl42/HWR_UQ/model-3387c7fi:v0"):
+    path = Path("artifacts") / Path(model_str).stem / "model.ckpt"
+    if path.is_file():
+        return model.load_from_checkpoint(path)
+
     run = wandb.init()
     artifact = run.use_artifact(model_str, type="model")
-    artifact_dir = artifact.download()
+    _ = artifact.download()
 
-    checkpoint = Path(artifact_dir) / "model.ckpt"
     wandb.finish()
-    return model.load_from_checkpoint(checkpoint)
+    return model.load_from_checkpoint(path)

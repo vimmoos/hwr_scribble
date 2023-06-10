@@ -1,5 +1,4 @@
-from network.utils import load_model
-from network.autoencoder import Autoencoder
+from network import Autoencoder, load_model
 from network import conf
 from plot.network import predict_single
 

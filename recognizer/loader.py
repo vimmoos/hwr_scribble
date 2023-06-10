@@ -1,3 +1,11 @@
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Optional, Callable
+from numpy.typing import NDArray
+from recognizer.struct import Word
+import cv2
+
+
 @dataclass
 class WordLoader:
     root: Path
