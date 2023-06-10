@@ -138,6 +138,7 @@ class ProjectionCutter:
             margin=self.margin,
             max_int_value=self.max_int_value,
             pad=self.pad,
+            pad_value=self.pad_value,
         )
 
 
