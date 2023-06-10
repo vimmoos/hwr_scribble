@@ -15,4 +15,4 @@ def square_pad(X, pad_value=0):
 def clf_tx(X, w_h=28):
     X = lin_seg_tx.ProjectionCutter(complement=0, pad=0, margin=0)(X)
     X = square_pad(X)
-    return cv2.resize(X, dsize=(w_h, w_h), interpolation=cv2.INTER_NEAREST)
+    return cv2.resize(X, dsize=(w_h, w_h), interpolation=cv2.INTER_CUBIC)

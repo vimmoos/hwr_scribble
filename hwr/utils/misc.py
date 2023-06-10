@@ -27,6 +27,10 @@ def pairwise(iterable):
     return zip(a, b)
 
 
+def get_random_indexs(dataset: Iterable, n: int):
+    return np.random.choice(range(len(dataset)), size=n)
+
+
 def batcher(
     iterable: Iterable,
     batch_size: int = 64,
@@ -45,3 +49,8 @@ def batcher(
 def to_tensor(img: NDArray, max_value=255):
     """Given an image (H,W) returns a normalized (between [0,1])tensor (1,H,W)"""
     return th.Tensor(img / max_value).unsqueeze(0)
+
+
+def named(obj, name):
+    setattr(obj, "__name__", name)
+    return obj
