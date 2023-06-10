@@ -1,3 +1,8 @@
+wandb/
+HWR_UQ/
+HWR/
+artifacts/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
