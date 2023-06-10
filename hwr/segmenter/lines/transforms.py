@@ -77,13 +77,13 @@ def get_binary(img, th_fn=threshold_otsu, white=255):
 
 
 def proj_cut(
-    X,
-    complement=255,
-    min_fraction=0.001,
-    margin: int = 5,
-    max_int_value: int = 255,
-    pad: Optional[int] = None,
-    pad_value: int = 255,
+        X,
+        complement=255,
+        min_fraction=0.001,
+        margin: int = 5,
+        max_int_value: int = 255,
+        pad: Optional[int] = None,
+        pad_value: int = 255,
 ):
     """Cut the given image based on projection profile heuristic.
     an area is considered empty/whitespace if it has less than `min_fraction` of the max intensity points.
@@ -110,9 +110,9 @@ def proj_cut(
     # print(h_min, h_max, v_min, v_max)
 
     cut = ret[
-        max(h_min - margin, 0) : h_max + margin,
-        max(v_min - margin, 0) : v_max + margin,
-    ]
+          max(h_min - margin, 0): h_max + margin,
+          max(v_min - margin, 0): v_max + margin,
+          ]
 
     if pad is not None:
         return small_padding(cut, p=pad, value=pad_value)
@@ -128,6 +128,7 @@ class ProjectionCutter:
     margin: int = 5
     max_int_value: int = 255
     pad: Optional[int] = None
+    pad_value: int = 255
 
     def __call__(self, img: NDArray) -> NDArray:
         return proj_cut(
@@ -154,14 +155,14 @@ class ProjectionCutter:
 
 
 def _custom_deskew(
-    X: NDArray,
-    prep_tx: Optional[ImgTx] = None,
-    smoot_hpp_win_len=20,
-    smoot_polyorder=1,
-    peak_lookahead=5,
-    peak_delta=0.05,
-    max_angle=10,
-    min_skew_accepted=0.001,
+        X: NDArray,
+        prep_tx: Optional[ImgTx] = None,
+        smoot_hpp_win_len=20,
+        smoot_polyorder=1,
+        peak_lookahead=5,
+        peak_delta=0.05,
+        max_angle=10,
+        min_skew_accepted=0.001,
 ):
     """Backbone functional definition"""
     _X = X.copy()
