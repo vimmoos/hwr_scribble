@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from segmenter.lines import transforms as lin_seg_tx
+from hwr.segmenter.lines import transforms as lin_seg_tx
 
 
 def square_pad(X, pad_value=0):

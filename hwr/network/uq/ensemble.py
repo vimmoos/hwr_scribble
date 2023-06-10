@@ -1,9 +1,9 @@
 import torch as th
 from tqdm import trange
-from network import BasicTrainEvalTask
-from utils.misc import get_all_labels
+from hwr.network import BasicTrainEvalTask
+from hwr.utils.misc import get_all_labels
 from collections import Counter
-from network.utils import (
+from hwr.network.utils import (
     build_model,
     build_dataset,
     build_dataloaders,
@@ -67,8 +67,8 @@ def train_and_eval_ensemble(conf: BasicTrainEvalTask):
 
 
 if __name__ == "__main__":
-    from network.conf import BasicTrainEvalTask, txs
-    from network.CNN import CNN
+    from hwr.network.conf import BasicTrainEvalTask, txs
+    from hwr.network.CNN import CNN
     from sklearn.metrics import classification_report
     import wandb
     from pathlib import Path

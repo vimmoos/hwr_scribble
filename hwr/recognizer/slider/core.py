@@ -1,11 +1,11 @@
-from recognizer.windows import WindowSlider
+from hwr.recognizer.windows import WindowSlider
 from typing import Iterable
 import torch as th
-from recognizer.struct import Word
-from recognizer.slider.conf import RecognizerConf
-from data_proc.utils import clf_tx
-from recognizer.slider.struct import RecognizerData
-from utils.misc import batcher, to_tensor
+from hwr.recognizer.struct import Word
+from hwr.recognizer.slider.conf import RecognizerConf
+from hwr.data_proc.utils import clf_tx
+from hwr.recognizer.slider.struct import RecognizerData
+from hwr.utils.misc import batcher, to_tensor
 
 
 def recognize_word(

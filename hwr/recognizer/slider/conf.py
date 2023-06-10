@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from recognizer.windows import SliceAcceptor, accept_slices_bounce
+from hwr.recognizer.windows import SliceAcceptor, accept_slices_bounce
 
 
 @dataclass

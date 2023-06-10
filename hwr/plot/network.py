@@ -1,6 +1,6 @@
-from utils.misc import shift_in_unit
+from hwr.utils.misc import shift_in_unit
 import numpy as np
-from network.uq.core import confidences
+from hwr.network.uq.core import confidences
 import matplotlib.pyplot as plt
 from scipy.stats import entropy
 

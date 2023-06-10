@@ -2,7 +2,7 @@ from torchvision.datasets import VisionDataset, ImageFolder
 from torch.utils.data import Subset
 from sklearn.model_selection import train_test_split
 import numpy as np
-from network.conf import BasicTrainEvalTask
+from hwr.network.conf import BasicTrainEvalTask
 from lightning.pytorch.loggers import WandbLogger
 from typing import Any, Dict
 import lightning.pytorch as pl
@@ -10,8 +10,7 @@ from torch.utils.data import DataLoader
 import torch as th
 import wandb
 from pathlib import Path
-from utils.misc import get_all_labels
-import os
+from hwr.utils.misc import get_all_labels
 
 
 def train_val_test_split(

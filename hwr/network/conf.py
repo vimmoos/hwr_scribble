@@ -3,7 +3,7 @@ from typing import Callable, List, Optional
 from pathlib import Path
 import lightning.pytorch as pl
 from torchvision import transforms
-from network.CNN import CNN
+from hwr.network.CNN import CNN
 
 
 @dataclass

@@ -3,7 +3,7 @@ from typing import Optional, Callable, Union, Tuple
 from numpy.typing import NDArray
 from dataclasses import dataclass
 from functools import partial
-from data_proc.utils import clf_tx
+from hwr.data_proc.utils import clf_tx
 
 
 class WindowOutOfBounds(Exception):
@@ -87,14 +87,14 @@ class WindowSlider:
 # BECAREFULL !!!!!!!!!!!!!!!!!!!!!!! CLF_TX
 
 
-def simple_fixed_slider(X, w=56):
-    return WindowSlider(width=w, img=X, img_tx=clf_tx)
-
-
-def simple_fixed_slider2(X, w=56):
-    return WindowSlider(
-        width=w,
-        img=X,
-        img_tx=clf_tx,
-        last_slice_accept=partial(accept_slices_min_width, min_width=10),
-    )
+# def simple_fixed_slider(X, w=56):
+#     return WindowSlider(width=w, img=X, img_tx=clf_tx)
+#
+#
+# def simple_fixed_slider2(X, w=56):
+#     return WindowSlider(
+#         width=w,
+#         img=X,
+#         img_tx=clf_tx,
+#         last_slice_accept=partial(accept_slices_min_width, min_width=10),
+#     )

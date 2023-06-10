@@ -1,6 +1,6 @@
 from sklearn.metrics import classification_report
 import wandb
-from network import conf, utils, autoencoder
+from hwr.network import conf, utils, autoencoder
 
 from pathlib import Path
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping

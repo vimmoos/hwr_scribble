@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Callable
 from numpy.typing import NDArray
-from recognizer.struct import Word
+from hwr.recognizer.struct import Word
 import cv2
 
 

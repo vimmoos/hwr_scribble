@@ -42,6 +42,6 @@ def batcher(
         yield batch
 
 
-def to_tensor(img: NDArray):
+def to_tensor(img: NDArray, max_value=255):
     """Given an image (H,W) returns a normalized (between [0,1])tensor (1,H,W)"""
-    return th.Tensor(img / 255).unsqueeze(0)
+    return th.Tensor(img / max_value).unsqueeze(0)

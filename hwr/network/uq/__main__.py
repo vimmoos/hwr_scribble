@@ -1,6 +1,6 @@
-from network import Autoencoder, load_model
-from network import conf
-from plot.network import predict_single
+from hwr.network import Autoencoder, load_model
+from hwr.network import conf
+from hwr.plot.network import predict_single
 
 from torchvision.datasets import ImageFolder
 from pathlib import Path

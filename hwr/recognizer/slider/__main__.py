@@ -1,12 +1,12 @@
 import cv2
-from network.uq import wrap_confidence
-from network import load_model, Autoencoder
-from recognizer.slider.core import recognize_word
-from recognizer.struct import Word
-from recognizer.slider.conf import RecognizerConf
-from utils.misc import to_tensor
+from hwr.network import wrap_confidence
+from hwr.network import load_model, Autoencoder
+from hwr.recognizer.slider.core import recognize_word
+from hwr.recognizer.struct import Word
+from hwr.recognizer.slider.conf import RecognizerConf
+from hwr.utils.misc import to_tensor
 import matplotlib.pyplot as plt
-import plot.utils as vz
+import hwr.plot.utils as vz
 
 img = cv2.imread(
     "/home/vimmoos/hwr-project/notebooks/simpified/all_pages/page-01.d/lines.d/line-01.d/words.d/word-3.png",

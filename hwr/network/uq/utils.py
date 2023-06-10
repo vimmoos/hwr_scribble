@@ -1,5 +1,5 @@
 import numpy as np
-from utils.misc import pairwise
+from hwr.utils.misc import pairwise
 
 
 def accuracy(y_true, y_pred):
