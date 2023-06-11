@@ -13,6 +13,7 @@ class RunContext:
     diag_path: Path
     verbose_diag: bool
     log: Logger = field(repr=False)
+    clean_start: bool = True
 
 
 IWordLoader = Callable[[Path], Generator[Word, None, None]]
