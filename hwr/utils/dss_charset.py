@@ -1,34 +1,37 @@
 from collections import OrderedDict
 
-y_to_name = {
-    0: "Alef",
-    1: "Ayin",
-    2: "Bet",
-    3: "Dalet",
-    4: "Gimel",
-    5: "He",
-    6: "Het",
-    7: "Kaf",
-    8: "Kaf-final",
-    9: "Lamed",
-    10: "Mem",
-    11: "Mem-medial",
-    12: "Nun-final",
-    13: "Nun-medial",
-    14: "Pe",
-    15: "Pe-final",
-    16: "Qof",
-    17: "Resh",
-    18: "Samekh",
-    19: "Shin",
-    20: "Taw",
-    21: "Tet",
-    22: "Tsadi-final",
-    23: "Tsadi-medial",
-    24: "Waw",
-    25: "Yod",
-    26: "Zayin",
-}
+y_to_name = OrderedDict(
+    [
+        (0, "Alef"),
+        (1, "Ayin"),
+        (2, "Bet"),
+        (3, "Dalet"),
+        (4, "Gimel"),
+        (5, "He"),
+        (6, "Het"),
+        (7, "Kaf"),
+        (8, "Kaf-final"),
+        (9, "Lamed"),
+        (10, "Mem"),
+        (11, "Mem-medial"),
+        (12, "Nun-final"),
+        (13, "Nun-medial"),
+        (14, "Pe"),
+        (15, "Pe-final"),
+        (16, "Qof"),
+        (17, "Resh"),
+        (18, "Samekh"),
+        (19, "Shin"),
+        (20, "Taw"),
+        (21, "Tet"),
+        (22, "Tsadi-final"),
+        (23, "Tsadi-medial"),
+        (24, "Waw"),
+        (25, "Yod"),
+        (26, "Zayin"),
+    ]
+)
+
 y_to_unicode = OrderedDict(
     [
         (0, "א"),
@@ -60,7 +63,6 @@ y_to_unicode = OrderedDict(
         (26, "ז"),
     ]
 )
-
 
 name_to_unicode = OrderedDict(
     [
