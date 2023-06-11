@@ -61,9 +61,9 @@ class WordProcCore0:
         return pred_y, [sel_keys(r, self.meta_keys) for r in ret]
 
 
-def write_page(page: Page, into_dir: Path):
+def write_page(page: Page, into_dir: Path, suffix="_characters.txt"):
     page_name, _ = splitext(page.pagename)
-    dest = into_dir / f"{page_name}.txt"
+    dest = into_dir / f"{page_name}{suffix}"
     with open(dest, "wb") as fo:
         fo.write(page.to_string(dss_charset.y_to_unicode.__getitem__).encode("utf-8"))
     return dest
@@ -82,5 +82,5 @@ class UnicodePageWriter:
         out_dir.mkdir(exist_ok=False)
 
         for page in page_stream:
-            self.log.info("Wrting page:", page.pagename)
+            self.log.info("Wrting page: %s", page.pagename)
             write_page(page, out_dir)

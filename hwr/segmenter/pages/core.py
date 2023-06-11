@@ -123,13 +123,15 @@ class PageProcessor:
                                                  self.s.contour_index_to_components)
 
         self.s.lino_word_imgs = OrderedDict()
+        self.s.lino_unsegm_word_imgs = OrderedDict()
 
         for lino, img in self.s.lino_img_index.items():
             try:
                 word_imgs = self.word_segmentator(img)
                 self.s.lino_word_imgs[lino] = word_imgs
             except Exception as e:
-                self.log.warning("Caught error while segmenting line %s: %s", e)
+                self.s.lino_unsegm_word_imgs[lino] = img
+                self.log.warning("Caught error while segmenting line %s: %s", lino, e)
 
     # -----------------------------------------
     # -----------------------------------------
