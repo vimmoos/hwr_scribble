@@ -1,6 +1,6 @@
 from sklearn.metrics import classification_report
 import wandb
-from hwr.network import conf, utils, autoencoder
+from hwr.network import conf, utils, autoencoder, deepae
 from hwr.data_proc.char_proc import train_txs
 
 from pathlib import Path
@@ -15,14 +15,14 @@ torch.set_float32_matmul_precision("medium")
 # scenarios
 
 # LOG_MODEL = False
-LOG_MODEL = False
+LOG_MODEL = True
 WANDB_PROJECT = "HWR_UQ"
 
 run = wandb.init(project=WANDB_PROJECT)
 
 train_task_config = conf.BasicTrainEvalTask(
     from_dir=Path("data/dss/monkbrill-prep-final"),
-    model_cls=autoencoder.Autoencoder,
+    model_cls=deepae.DeepAutoencoder2,
     tx=train_txs,
     num_classes=27,
     stratify=True,
