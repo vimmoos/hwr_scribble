@@ -1,7 +1,7 @@
 # Dead Sea Scroll Project
 
 Please find the code for task 1/2 @ https://github.com/vimmoos/hwr_scribble
-Plases find the code for task 3 @ https://github.com/benvanderlaan1/HWR
+Please find the code for task 3 @ https://github.com/benvanderlaan1/HWR
 
 Git clone each repo to each folder and follow instructions in their readme
 
@@ -34,12 +34,12 @@ positional argument of the cli invocation. The progream will produce results in 
 
 ### The help
 
-``` 
+```
 ❯ python ./main.py --help
-                                                                             
- Usage: main.py [OPTIONS] [INPUT]                                            
-                                                                             
-                                                                             
+
+ Usage: main.py [OPTIONS] [INPUT]
+
+
 ╭─ Arguments ───────────────────────────────────────────────────────────────╮
 │   input      [INPUT]  Path to the input images [default: None]            │
 ╰───────────────────────────────────────────────────────────────────────────╯
