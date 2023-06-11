@@ -1,7 +1,19 @@
+import logging
+import shutil
+from dataclasses import dataclass
 from itertools import groupby
+from logging import Logger
+from os.path import splitext
+from pathlib import Path
+from typing import Callable, Tuple, List, Any
 from typing import Iterable, Generator
 
+from numpy.typing import NDArray
+
 from hwr import Word, Page, Line
+from hwr.recognizer.peaker.core import get_chars2
+from hwr.utils import dss_charset
+from hwr.utils.misc import sel_keys
 
 
 def word_stream_to_pages(processed_stream: Iterable[Word]) -> Generator[Page, None, None]:
@@ -23,13 +35,6 @@ def word_stream_to_pages(processed_stream: Iterable[Word]) -> Generator[Page, No
                    for (lineno, line_group)
                    in groupby(page_group, key=lambda w: w.lineno)]
         )
-
-
-from dataclasses import dataclass
-from typing import Callable, Tuple, List, Any
-from numpy.typing import NDArray
-from hwr.utils.misc import sel_keys
-from hwr.recognizer.peaker.core import get_chars2
 
 
 @dataclass
@@ -54,3 +59,28 @@ class WordProcCore0:
         ret = get_chars2(X, self.model, self.window_tx, torch_device=self.torch_device)
         pred_y = [r["class"] for r in ret]
         return pred_y, [sel_keys(r, self.meta_keys) for r in ret]
+
+
+def write_page(page: Page, into_dir: Path):
+    page_name, _ = splitext(page.pagename)
+    dest = into_dir / f"{page_name}.txt"
+    with open(dest, "wb") as fo:
+        fo.write(page.to_string(dss_charset.y_to_unicode.__getitem__).encode("utf-8"))
+    return dest
+
+
+@dataclass
+class UnicodePageWriter:
+    log: Logger
+    rm_dest: bool = True
+
+    def __call__(self, out_dir: Path, page_stream: Iterable[Page]) -> None:
+        if self.rm_dest and out_dir.exists():
+            self.log.warning("Deleting old contents")
+            shutil.rmtree(out_dir)
+
+        out_dir.mkdir(exist_ok=False)
+
+        for page in page_stream:
+            self.log.info("Wrting page:", page.pagename)
+            write_page(page, out_dir)
