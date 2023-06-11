@@ -8,41 +8,6 @@ from torchvision.datasets import ImageFolder
 from torch.utils.data import Dataset
 
 
-class CombinedImageFolder(ImageFolder):
-    def __init__(self, root, datasets):
-        self.datasets = datasets
-        self.classes = datasets[0].classes
-        self.class_to_idx = datasets[0].class_to_idx
-        self.samples = sum([dataset.samples for dataset in datasets], [])
-
-        super(CombinedImageFolder, self).__init__(
-            root, transform=None, target_transform=None
-        )
-
-    def __getitem__(self, index):
-        dataset_idx, sample_idx = self.get_dataset_index(index)
-        sample, target = self.datasets[dataset_idx][sample_idx]
-
-        if self.transform is not None:
-            sample = self.transform(sample)
-
-        if self.target_transform is not None:
-            target = self.target_transform(target)
-
-        return sample, target
-
-    def __len__(self):
-        return len(self.samples)
-
-    def get_dataset_index(self, index):
-        for dataset_idx, dataset in enumerate(self.datasets):
-            if index < len(dataset):
-                return dataset_idx, index
-            else:
-                index -= len(dataset)
-        return (None, None)
-
-
 class CombinedDataset(Dataset):
     def __init__(self, datasets):
         self.datasets = datasets
@@ -61,10 +26,9 @@ class CombinedDataset(Dataset):
             ):
                 return self.datasets[dataset_idx][index - cumulative_len]
         raise IndexError("Index out of range")
-        # raise StopIteration
 
     def __len__(self):
-        return sum(self.lengths) - 1
+        return sum(self.lengths)
 
 
 def format_with_leading_zeros(x, n_fixed_chars):

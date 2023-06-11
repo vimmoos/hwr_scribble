@@ -3,24 +3,27 @@ from typing import Iterable
 import torch as th
 from hwr.types import Word
 from hwr.recognizer.slider.conf import RecognizerConf
-from hwr.data_proc.utils import clf_tx
+from hwr.data_proc.char_proc import real_txs
 from hwr.recognizer.slider.struct import RecognizerData
 from hwr.utils.misc import batcher, to_tensor
 
 
 def recognize_word(
-        word: Word,
-        conf: RecognizerConf,
+    word: Word,
+    conf: RecognizerConf,
 ):
     data = RecognizerData()
     with WindowSlider(
-            width=conf.width,
-            img=word.img,
-            img_tx=clf_tx,
-            last_slice_accept=conf.last_slice,
+        width=conf.width,
+        img=word.img,
+        img_tx=real_txs,
+        last_slice_accept=conf.last_slice,
     ) as window:
         while True:
+            print("new window")
+            print(window.pos)
             _confs, meta = yield window()
+            print(_confs)
             if _confs is None:
                 raise Exception("Mona ti non mi")
 
@@ -29,10 +32,12 @@ def recognize_word(
             window << conf.offset
 
             if data.max >= conf.perfect_conf:
+                print("found perfect match ===============")
                 width, pos = data.next_char()
                 window.load(width, pos) << conf.shift(width, pos)
 
             if data.patience > conf.patience:
+                print("done with patience ===============")
                 width, pos = data.accept_recognition(conf.acceptable_conf)
                 window.load(width, pos) << conf.shift(width, pos)
 
@@ -44,10 +49,10 @@ def recognize_word(
 
 
 def recognize_words(
-        words: Iterable[Word],
-        conf: RecognizerConf,
-        model: callable,
-        batch_size: int = 64,
+    words: Iterable[Word],
+    conf: RecognizerConf,
+    model: callable,
+    batch_size: int = 64,
 ):
     batches = batcher(words, batch_size)
     for batch in batches:

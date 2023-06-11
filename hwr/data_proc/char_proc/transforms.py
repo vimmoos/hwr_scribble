@@ -32,6 +32,14 @@ class OpenCvLambda(NamedLambda):
         return f"OpenCvLambda({self.name})"
 
 
+class TorchLambda(NamedLambda):
+    def __init__(self, f, name=None):
+        super().__init__(lambda x: to_cv(f(cv_to_tensor(x))), name=name)
+
+    def __repr__(self):
+        return f"OpenCvLambda({self.name})"
+
+
 tx_squeeze = NamedLambda(lambda t: t.squeeze(), "Squeeze")
 tx_negative = NamedLambda(lambda t: 1 - t, "Neg1")
 
@@ -190,3 +198,29 @@ char_transforms = [
         tx_prep_zoom,
     ]
 ]
+
+
+train_txs = transforms.Compose(
+    [
+        transforms.Resize(
+            (28, 28),
+            interpolation=transforms.InterpolationMode.NEAREST,
+        ),
+        transforms.Grayscale(),
+        transforms.ToTensor(),
+    ]
+)
+
+real_txs = TorchLambda(
+    transforms.Compose(
+        [
+            tx_prep_cut,
+            tx_unsqueeze,
+            transforms.Resize(
+                (28, 28),
+                interpolation=transforms.InterpolationMode.NEAREST,
+            ),
+            tx_squeeze,
+        ]
+    )
+)
