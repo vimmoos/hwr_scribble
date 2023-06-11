@@ -89,7 +89,7 @@ def proj_cut(
     an area is considered empty/whitespace if it has less than `min_fraction` of the max intensity points.
     """
     ret = X.copy()
-    X = get_binary(complement - X, white=max_int_value)
+    X = get_binary(complement - X if complement else X, white=max_int_value)
 
     h_proj = projections(X, axis=1, max_int_value=max_int_value)
     (h_nonzeros,) = np.where(h_proj > min_fraction)
@@ -138,6 +138,7 @@ class ProjectionCutter:
             margin=self.margin,
             max_int_value=self.max_int_value,
             pad=self.pad,
+            pad_value=self.pad_value,
         )
 
 

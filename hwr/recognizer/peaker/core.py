@@ -1,9 +1,25 @@
+from collections import deque, Counter
+from dataclasses import dataclass, field
+from typing import Optional, List, Callable
+
+import numpy as np
+import torch as th
+from benedict import OrderedBeneDict, BeneDict
+from matplotlib import pyplot as plt
+from numpy.typing import NDArray
+from peakdetect import peakdetect
+
+from hwr.network import uq
+from hwr.plot import utils as vizutils
+from hwr.utils.misc import shift_in_unit
+
+
 class ErrorUnsgementableWord(Exception):
     pass
 
 
 # used once
-def img_batch_to_tensor_batch(Xs):
+def img_batch_to_tensor_batch(Xs) -> th.Tensor:
     return th.Tensor(np.array(Xs)).unsqueeze(1)
 
 
@@ -52,7 +68,9 @@ class WindowOverSegment:
 
         except Exception as e:
             # raise ErrorUnsgementableWord(e, self)
-            self.WORD_DISCARD_BIN.append(self)
+            if self.WORD_DISCARD_BIN:
+                self.WORD_DISCARD_BIN.append(self)
+
             self.s.img_slices = []
             self.s.x_slices = []
 
@@ -87,12 +105,17 @@ class WindowOverSegment:
 
 
 def get_chars2(
-    X,
-    model,
-    window_tx: Callable[[NDArray], NDArray],
-    MIN_WIN=10,
-    MAX_WIN=40,
+        X,
+        model,
+        window_tx: Callable[[NDArray], NDArray],
+        MIN_WIN=10,
+        MAX_WIN=40,
+        torch_device="cpu",
 ):
+    """
+    TODO: check window overlapping
+    TODO: add min-confidence parameter
+    """
     wos = WindowOverSegment()
     # pass the image to to obtain a list of images
     all_slices = list(wos(X))
@@ -192,8 +215,9 @@ def get_chars2(
         print("Created tensor batch: ", tensor_batch.shape)
 
         print("Running classifier...")
-        with uq_utils.confidences(model, n=100, only_confidence=False) as f:
-            rvotes, _, imgs = f(tensor_batch)
+        with uq.confidences(model, n=100, only_confidence=False) as f:
+            rvotes, _, imgs = f(tensor_batch.to(torch_device))
+        print("...Ran classifier")
 
         # extract the predicted classes
         cls = [Counter(x).most_common(1)[0][0] for x in rvotes]
@@ -250,32 +274,3 @@ def get_chars2(
         )
 
     return selections
-
-
-@dataclass
-class WordProcessor:
-    core: Callable[[NDArray], Tuple[List[int], Any]]
-
-    def __call__(self, w: Word):
-        w.labels, w.meta = self.core(w.img)
-        return w
-
-
-def process_words_stream(
-    wp: WordProcessor, stream: Iterable[Word]
-) -> Generator[Word, None, None]:
-    for w in stream:
-        yield wp(w)
-
-
-@dataclass
-class WordProcCore0:
-    model: Any
-    window_tx: Callable[[NDArray], NDArray]
-    meta_keys = ["conf", "meta.avg_recons", "bounds"]
-
-    def __call__(self, X: NDArray) -> Tuple[List[int], Any]:
-        ret = get_chars2(X, self.model, self.window_tx)
-        pred_y = [r["class"] for r in ret]
-        # pred_names = [CLASS_NAMES[y] for y in pred_y]
-        return pred_y, [sel_keys(r, self.meta_keys) for r in ret]

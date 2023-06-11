@@ -1,7 +1,7 @@
 from hwr.recognizer.windows import WindowSlider
 from typing import Iterable
 import torch as th
-from hwr.recognizer.struct import Word
+from hwr.types import Word
 from hwr.recognizer.slider.conf import RecognizerConf
 from hwr.data_proc.utils import clf_tx
 from hwr.recognizer.slider.struct import RecognizerData
@@ -9,15 +9,15 @@ from hwr.utils.misc import batcher, to_tensor
 
 
 def recognize_word(
-    word: Word,
-    conf: RecognizerConf,
+        word: Word,
+        conf: RecognizerConf,
 ):
     data = RecognizerData()
     with WindowSlider(
-        width=conf.width,
-        img=word.img,
-        img_tx=clf_tx,
-        last_slice_accept=conf.last_slice,
+            width=conf.width,
+            img=word.img,
+            img_tx=clf_tx,
+            last_slice_accept=conf.last_slice,
     ) as window:
         while True:
             _confs, meta = yield window()
@@ -44,10 +44,10 @@ def recognize_word(
 
 
 def recognize_words(
-    words: Iterable[Word],
-    conf: RecognizerConf,
-    model: callable,
-    batch_size: int = 64,
+        words: Iterable[Word],
+        conf: RecognizerConf,
+        model: callable,
+        batch_size: int = 64,
 ):
     batches = batcher(words, batch_size)
     for batch in batches:
