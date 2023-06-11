@@ -10,7 +10,7 @@ import cv2
 class WordLoader:
     root: Path
 
-    page_glob: str = "page-*.d"
+    page_glob: str = "*.d"
 
     line_dir: str = "lines.d"
     line_glob: str = "line-*.d"

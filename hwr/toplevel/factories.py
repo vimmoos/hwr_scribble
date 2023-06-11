@@ -1,6 +1,7 @@
 from hwr.toplevel import implem
 from hwr.toplevel.types import (
     RunContext,
+    IPageAnalyzer,
     IWordLoader,
     IWordStreamProcessor,
     IWordsPager,
@@ -10,9 +11,22 @@ from hwr import recognizer
 from hwr.network import load_model, Autoencoder
 from hwr.data_proc.char_proc import real_txs
 import torch
+from hwr.segmenter.pages.analyzer import PageAnalyzer
 
 from hwr import network
 from hwr.recognizer.slider.implem import mona
+
+from hwr.segmenter.pages.pipeline import page_processor_factory
+
+
+def simple_page_analyzer(ctx: RunContext) -> IPageAnalyzer:
+    return PageAnalyzer(
+        page_processor_factory=page_processor_factory,
+        debug_plots=ctx.verbose_diag,
+        page_loader_glob=ctx.pages_glob,
+        rm_diag=True,
+        log=ctx.log
+    )
 
 
 def simple_word_loader(_: RunContext) -> IWordLoader:

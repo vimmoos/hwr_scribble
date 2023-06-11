@@ -12,6 +12,7 @@ from peakdetect import peakdetect
 from hwr.network import uq
 from hwr.plot import utils as vizutils
 from hwr.utils.misc import shift_in_unit
+import logging
 
 
 class ErrorUnsgementableWord(Exception):
@@ -121,7 +122,7 @@ def get_chars2(
     all_slices = list(wos(X))
     all_slices_meta = wos.get_current_slices()
 
-    print(f"Starting with {len(all_slices)} slices")
+    logging.debug(f"Starting with {len(all_slices)} slices")
     # now we must pass frames to classifer untill we exaust them
     # each time we pass the first N windows to
 
@@ -135,7 +136,7 @@ def get_chars2(
     # meta_slices = all_slices_meta.copy()
     while img_slices:
         it += 1
-        print(f"------- Iteration {it} -------")
+        logging.debug(f"------- Iteration {it} -------")
         batch = []
         batch_meta = []
 
@@ -152,7 +153,7 @@ def get_chars2(
 
         # untill we reach above MIN_WIN then keep stacking
         while curr.shape[1] < MIN_WIN and img_slices:
-            print(
+            logging.debug(
                 f"Window w={curr.shape[1]} below MIN_WIN={MIN_WIN}, enlarging..."
             )
 
@@ -168,16 +169,16 @@ def get_chars2(
         # if the img_slices finished before reaching MIN_WIN
         # then curr contains what was there, but we don't produce the frame at all
         if curr.shape[1] < MIN_WIN:
-            print("Last window below MIN_WIN")
+            logging.debug("Last window below MIN_WIN")
             break
 
-        print("Created first batch frame, consumed slices:", len(parts))
+        logging.debug("Created first batch frame, consumed slices:", len(parts))
         batch.append(curr)
         batch_meta.append(curr_meta)
 
         # note that the first frame is allowed to escape MAX_WIN, but will not produce attionals
 
-        print("Generating additional fram up to max width")
+        logging.debug("Generating additional fram up to max width")
 
         # while we are belew max and can take other slices
         while curr.shape[1] <= MAX_WIN and img_slices:
@@ -196,7 +197,7 @@ def get_chars2(
             parts.appendleft(_next)  # register the part
             parts_meta.appendleft(_next_meta)
 
-            print(f"Creating {len(batch)}-th batch frame")
+            logging.debug(f"Creating {len(batch)}-th batch frame")
 
             batch.append(new_curr)
             batch_meta.append(new_curr_meta)
@@ -207,17 +208,17 @@ def get_chars2(
         # ok now we have a batch with at least 1 item, possibly more,
         # where items have min width MIN_WIN and max MAX_WIN
 
-        print(f"Preparing batch of size={len(batch)} valid slices")
+        logging.debug(f"Preparing batch of size={len(batch)} valid slices")
         converted_frames = [window_tx(x) for x in batch]
         tensor_batch = img_batch_to_tensor_batch(
             [frame / 255 for frame in converted_frames]
         )
-        print("Created tensor batch: ", tensor_batch.shape)
+        logging.debug("Created tensor batch: ", tensor_batch.shape)
 
-        print("Running classifier...")
+        logging.debug("Running classifier...")
         with uq.confidences(model, n=100, only_confidence=False) as f:
             rvotes, _, imgs = f(tensor_batch.to(torch_device))
-        print("...Ran classifier")
+        logging.debug("...Ran classifier")
 
         # extract the predicted classes
         cls = [Counter(x).most_common(1)[0][0] for x in rvotes]
@@ -234,7 +235,7 @@ def get_chars2(
 
         # img_bounds = slices_to_bound(meta_slices[slicez[chosen_slice_index]])
 
-        print(
+        logging.debug(
             f"Chosen slice: #{chosen_slice_index} conf = {chosen_conf} label = {chosen_label}"
         )
         selections.append(
@@ -268,7 +269,7 @@ def get_chars2(
             img_slices.appendleft(part)
             img_slices_meta.appendleft(part_meta)
 
-        print(
+        logging.debug(
             f"Put back {len(put_back)} slices, Remaining slices:",
             len(img_slices),
         )
