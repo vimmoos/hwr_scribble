@@ -4,6 +4,7 @@ from torchvision import transforms
 from hwr.data_proc.char_proc.utils import to_cv, cv_to_tensor
 from hwr.utils.misc import named
 from hwr.segmenter.lines import transforms as lin_seg_tx
+import torchvision.transforms.v2 as t2
 
 
 class NamedLambda:
@@ -76,11 +77,27 @@ def cut_via_contours(image: np.array) -> np.array:
     return character
 
 
+def cat_contours(image: np.array) -> np.array:
+    # Bounding box extraction for largest contour (by area)
+    to_cont = binarize_triangle(image)
+
+    contours, _ = cv.findContours(
+        to_cont, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE
+    )
+    contour = max(contours, key=cv.contourArea)
+    x, y, w, h = cv.boundingRect(contour)
+
+    # Crop the image based on the bounding box
+    character = image[y : y + h, x : x + w]
+
+    return character
+
+
 cutter = lin_seg_tx.ProjectionCutter(
     complement=0,
     pad=0,
     margin=0,
-    min_fraction=0.001,
+    min_fraction=0.1,
 )
 
 
@@ -98,12 +115,12 @@ def square_pad(x: np.array) -> np.array:
 tx_outsu_bin = OpenCvLambda(binarize_otsu, name="OtsuBin")
 tx_triang_bin = OpenCvLambda(binarize_triangle, name="TirangBin")
 tx_cont_cut = OpenCvLambda(cut_via_contours, name="Cut_0")
+tx_cont = OpenCvLambda(cat_contours, name="Cut_1")
 tx_square_pad = OpenCvLambda(square_pad, name="square_pad")
 tx_proj_cut = OpenCvLambda(cutter, name="proj_cut")
+tx_prep_erode = OpenCvLambda(erosion, name="eroded")
 
-tx_prep_cut = named(
-    transforms.Compose([tx_proj_cut, tx_square_pad]), "Only_cut"
-)
+tx_unsqueeze = NamedLambda(lambda t: t.unsqueeze(0), "Unsqueeze")
 
 tx_prep_otsu = named(
     transforms.Compose([tx_outsu_bin, tx_cont_cut, tx_square_pad]),
@@ -115,13 +132,26 @@ tx_prep_tri = named(
 )
 
 
-tx_unsqueeze = NamedLambda(lambda t: t.unsqueeze(0), "Unsqueeze")
+tx_prep_cut = named(transforms.Compose([tx_cont, tx_square_pad]), "Only_cut")
 
-tx_prep_erode = OpenCvLambda(erosion, name="eroded")
+
 tx_prep_erode = named(
     transforms.Compose([tx_prep_cut, tx_prep_erode]),
     "erode",
 )
+
+tx_prep_zoom = named(
+    transforms.Compose(
+        [
+            tx_prep_cut,
+            tx_unsqueeze,
+            t2.RandomZoomOut(p=1, side_range=(1, 2)),
+            tx_squeeze,
+        ]
+    ),
+    "zoom",
+)
+
 tx_prep_rotation = named(
     transforms.Compose(
         [
@@ -145,5 +175,18 @@ tx_prep_perspective = named(
     ),
     "perspective",
 )
-# torchvision.transforms.RandomRotation
-#  torchvision.transforms.RandomPerspective
+
+
+tx_noop = NamedLambda(lambda t: t, "Noop")
+
+char_transforms = [
+    transforms.Compose([tx_base, tx])
+    for tx in [
+        tx_noop,
+        tx_cont,
+        tx_prep_erode,
+        tx_prep_rotation,
+        tx_prep_perspective,
+        tx_prep_zoom,
+    ]
+]

@@ -31,3 +31,25 @@ def show_txs(dataset: Dataset, indexes, txs, figsize=(3, 10)):
             axs[row][col].set_yticks([])
     fig.tight_layout()
     return fig
+
+
+def show_as_grid(dataset, indexes, n_cols, figsize=(3, 10), cmap="Greys_r"):
+    n_rows, rem = divmod(len(indexes), n_cols)
+
+    if rem != 0:
+        n_rows += 1
+
+    fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=figsize)
+
+    for ax in axes.ravel():
+        ax.set_axis_off()
+
+    for index, ax in zip(indexes, axes.ravel()):
+        ax.set_axis_on()
+        X, y = dataset[index]
+        ax.imshow(X, cmap=cmap)
+        ax.set_xticks([])
+        ax.set_yticks([])
+
+    fig.tight_layout()
+    return fig
