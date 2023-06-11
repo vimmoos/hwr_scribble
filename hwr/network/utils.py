@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 from hwr.network.conf import BasicTrainEvalTask
 from lightning.pytorch.loggers import WandbLogger
+import torch
 from typing import Any, Dict
 import lightning.pytorch as pl
 from torch.utils.data import DataLoader
@@ -173,15 +174,21 @@ def train_and_eval_model(conf: BasicTrainEvalTask):
 
     return model, None, None
 
+def build_from_checkpoint(model, path):
+    if torch.cuda.is_available():
+        return model.load_from_checkpoint(path)
+    return model.load_from_checkpoint(path, map_location=torch.device("cpu"))
+
+
 
 def load_model(model, model_str="drl42/HWR_UQ/model-3387c7fi:v0"):
     path = Path("artifacts") / Path(model_str).stem / "model.ckpt"
     if path.is_file():
-        return model.load_from_checkpoint(path)
+        return build_from_checkpoint(model, path)
 
     run = wandb.init()
     artifact = run.use_artifact(model_str, type="model")
     _ = artifact.download()
 
     wandb.finish()
-    return model.load_from_checkpoint(path)
+    return build_from_checkpoint(model, path)
