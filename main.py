@@ -24,11 +24,13 @@ logger.setLevel(logging.INFO)
 
 def entrypoint(input: Annotated[Path, typer.Argument(file_okay=False,
                                                      dir_okay=True,
-                                                     readable=True
+                                                     readable=True,
+                                                     help="Path to the input images"
                                                      )] = None,
                output: Annotated[Path, typer.Option(file_okay=False,
                                                     dir_okay=True,
-                                                    writable=True
+                                                    writable=True,
+                                                    help="Path where to produce the output transcriptions"
                                                     )] = "results",
                diag_plots: bool = False,
                ):
