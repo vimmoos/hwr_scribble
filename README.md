@@ -1,5 +1,10 @@
 # Dead Sea Scroll Project
 
+Please find the code for task 1/2 @ https://github.com/vimmoos/hwr_scribble
+Plases find the code for task 3 @ https://github.com/benvanderlaan1/HWR
+
+Git clone each repo to each folder and follow instructions in their readme
+
 ## Installation
 
 ### Virtual Environment
@@ -34,7 +39,6 @@ positional argument of the cli invocation. The progream will produce results in 
                                                                              
  Usage: main.py [OPTIONS] [INPUT]                                            
                                                                              
- :param input: :param output: :param diag_plots: :return:                    
                                                                              
 ╭─ Arguments ───────────────────────────────────────────────────────────────╮
 │   input      [INPUT]  Path to the input images [default: None]            │

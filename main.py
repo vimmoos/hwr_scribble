@@ -13,7 +13,7 @@ from typing_extensions import Annotated
 
 import tempfile
 
-SPEC = my_spec_mona
+SPEC = my_spec2
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 

@@ -238,6 +238,7 @@ def get_chars2(
         logging.debug(
             f"Chosen slice: #{chosen_slice_index} conf = {chosen_conf} label = {chosen_label}"
         )
+
         selections.append(
             BeneDict(
                 {
