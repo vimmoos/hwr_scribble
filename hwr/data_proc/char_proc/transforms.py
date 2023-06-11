@@ -80,7 +80,7 @@ def cut_via_contours(image: np.array) -> np.array:
     x, y, w, h = cv.boundingRect(contour)
 
     # Crop the image based on the bounding box
-    character = image[y : y + h, x : x + w]
+    character = image[y: y + h, x: x + w]
 
     return character
 
@@ -96,7 +96,7 @@ def cat_contours(image: np.array) -> np.array:
     x, y, w, h = cv.boundingRect(contour)
 
     # Crop the image based on the bounding box
-    character = image[y : y + h, x : x + w]
+    character = image[y: y + h, x: x + w]
 
     return character
 
@@ -139,9 +139,7 @@ tx_prep_tri = named(
     "Triang+cont+square",
 )
 
-
 tx_prep_cut = named(transforms.Compose([tx_cont, tx_square_pad]), "Only_cut")
-
 
 tx_prep_erode = named(
     transforms.Compose([tx_prep_cut, tx_prep_erode]),
@@ -184,7 +182,6 @@ tx_prep_perspective = named(
     "perspective",
 )
 
-
 tx_noop = NamedLambda(lambda t: t, "Noop")
 
 char_transforms = [
@@ -198,7 +195,6 @@ char_transforms = [
         tx_prep_zoom,
     ]
 ]
-
 
 train_txs = transforms.Compose(
     [
@@ -214,7 +210,8 @@ train_txs = transforms.Compose(
 real_txs = TorchLambda(
     transforms.Compose(
         [
-            tx_prep_cut,
+            tx_proj_cut,
+            tx_square_pad,
             tx_unsqueeze,
             transforms.Resize(
                 (28, 28),
