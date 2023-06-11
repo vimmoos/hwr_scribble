@@ -3,10 +3,10 @@ from pathlib import Path
 from hwr.toplevel import factories
 import logging
 
-from hwr.toplevel.pipelines import my_spec, my_spec2
+from hwr.toplevel.pipelines import my_spec, my_spec2, my_spec_mona
 
 OUT = "results-test2"
-SPEC = my_spec2
+SPEC = my_spec_mona
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -19,4 +19,4 @@ ctx = RunContext(
     clean_start=True,
 )
 
-run_pipeline(ctx, my_spec2)
+run_pipeline(ctx, SPEC)

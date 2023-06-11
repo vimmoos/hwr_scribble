@@ -3,6 +3,7 @@ HWR_UQ/
 HWR/
 artifacts/
 data/
+results*/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

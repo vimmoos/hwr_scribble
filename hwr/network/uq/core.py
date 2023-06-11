@@ -1,4 +1,5 @@
 import numpy as np
+import torch as th
 from contextlib import contextmanager
 from collections import Counter
 
@@ -44,6 +45,22 @@ def wrap_confidence(model, n=200):
         with confidences(model, only_confidence=False, n=n) as m:
             confs, probs, imgs = m(data)
         return confs, probs, imgs.squeeze()
+
+    return __inner__
+
+
+def ensemble_wrap_confidence(models, n=200):
+    n_per_model = n // len(models)
+
+    def __inner__(data):
+        confs, probs, imgs = [], [], []
+        for model in models:
+            with confidences(model, only_confidence=False, n=n_per_model) as m:
+                conf, prob, img = m(data)
+                confs.extend(conf)
+                probs.extend(prob)
+                imgs.extend(img)
+        return confs, np.array(probs), np.array(imgs).squeeze()
 
     return __inner__
 

@@ -20,26 +20,28 @@ def recognize_word(
         last_slice_accept=conf.last_slice,
     ) as window:
         while True:
-            print("new window")
-            print(window.pos)
+            # print("new window")
+            # print(window.pos)
             _confs, meta = yield window()
-            print(_confs)
+            # print(_confs)
             if _confs is None:
                 raise Exception("Mona ti non mi")
 
             data.update(_confs, window.freeze(), meta)
 
-            window << conf.offset
-
             if data.max >= conf.perfect_conf:
-                print("found perfect match ===============")
+                # print("found perfect match ===============")
                 width, pos = data.next_char()
                 window.load(width, pos) << conf.shift(width, pos)
+                continue
 
             if data.patience > conf.patience:
-                print("done with patience ===============")
+                # print("done with patience ===============")
                 width, pos = data.accept_recognition(conf.acceptable_conf)
                 window.load(width, pos) << conf.shift(width, pos)
+                continue
+
+            window << conf.offset
 
     _, _ = data.accept_recognition(conf.acceptable_conf)
     word.labels = data.labels
@@ -53,6 +55,7 @@ def recognize_words(
     conf: RecognizerConf,
     model: callable,
     batch_size: int = 64,
+    device: str = "cuda",
 ):
     batches = batcher(words, batch_size)
     for batch in batches:
@@ -60,7 +63,8 @@ def recognize_words(
         recogs = [recognize_word(word, conf) for word in batch]
         windows = th.stack([to_tensor(next(rec)) for rec in recogs])
         while recogs:
-            confs, probs, imgs = model(windows)
+            # windows = windows.cuda()
+            confs, probs, imgs = model(windows.cuda())
             next_windows = []
             next_recogs = []
             for idx, recog in enumerate(recogs):
@@ -73,6 +77,6 @@ def recognize_words(
                 next_windows.append(to_tensor(next_wind))
                 next_recogs.append(recog)
 
-            windows = th.stack(next_windows)
+            windows = th.stack(next_windows) if next_windows else []
             recogs = next_recogs
-        yield sorted(res, key=Word.sort_key)
+        yield from sorted(res, key=Word.sort_key)
