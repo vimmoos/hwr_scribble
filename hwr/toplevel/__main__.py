@@ -2,7 +2,7 @@ from hwr.toplevel.types import RunContext, run_pipeline
 from pathlib import Path
 import logging
 
-from hwr.toplevel.pipelines import my_spec, my_spec2
+from hwr.toplevel.pipelines import my_spec, my_spec2, my_spec_mona
 
 OUT = "results-test-0-1"
 SPEC = my_spec2
@@ -18,4 +18,4 @@ ctx = RunContext(
     clean_start=True,
 )
 
-run_pipeline(ctx, my_spec2)
+run_pipeline(ctx, SPEC)

@@ -45,6 +45,8 @@ class RecognizerData:
         return width, pos
 
     def accept_recognition(self, threshold):
+        if self.max == -np.inf:
+            return None, None
         if self.max < threshold:
             width, pos = self.window[0], self.window[1]
             self._update()
