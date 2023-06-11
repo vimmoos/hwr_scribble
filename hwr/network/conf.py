@@ -29,15 +29,3 @@ class BasicTrainEvalTask:
     max_epochs: int = 2000
     callbacks: Optional[List[pl.Callback]] = None
     return_test_set_predictions = True
-
-
-txs = transforms.Compose(
-    [
-        transforms.Resize(
-            (28, 28),
-            interpolation=transforms.InterpolationMode.NEAREST,
-        ),
-        transforms.Grayscale(),
-        transforms.ToTensor(),
-    ]
-)

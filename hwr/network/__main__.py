@@ -1,6 +1,7 @@
 from sklearn.metrics import classification_report
 import wandb
 from hwr.network import conf, utils, autoencoder
+from hwr.data_proc.char_proc import train_txs
 
 from pathlib import Path
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
@@ -20,14 +21,14 @@ WANDB_PROJECT = "HWR_UQ"
 run = wandb.init(project=WANDB_PROJECT)
 
 train_task_config = conf.BasicTrainEvalTask(
-    from_dir=Path("data/dss/monkbrill-prep-tri"),
+    from_dir=Path("data/dss/monkbrill-prep-final"),
     model_cls=autoencoder.Autoencoder,
-    tx=conf.txs,
+    tx=train_txs,
     num_classes=27,
     stratify=True,
     random_state=42,
     shuffle=True,
-    batch_size=64,
+    batch_size=128,
     wandb_project=WANDB_PROJECT,
     max_epochs=2000,
     log_model=LOG_MODEL,

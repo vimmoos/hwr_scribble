@@ -1,12 +1,14 @@
 from hwr.network import Autoencoder, load_model
-from hwr.network import conf
+from hwr.data_proc.char_proc import train_txs
 from hwr.plot.network import predict_single
 
 from torchvision.datasets import ImageFolder
 from pathlib import Path
 
 autoencoder = load_model(Autoencoder)
-dataset = ImageFolder(Path("data/dss/monkbrill-prep-tri"), transform=conf.txs)
+dataset = ImageFolder(
+    Path("data/dss/monkbrill-prep-tri"), transform=train_txs
+)  # fix
 
 
 test = dataset[0][0].unsqueeze(1).cuda()

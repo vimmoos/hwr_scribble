@@ -3,7 +3,6 @@ from typing import Optional, Callable, Union, Tuple
 from numpy.typing import NDArray
 from dataclasses import dataclass
 from functools import partial
-from hwr.data_proc.utils import clf_tx
 
 
 class WindowOutOfBounds(Exception):
