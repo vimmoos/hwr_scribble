@@ -9,21 +9,20 @@ from typing_extensions import Annotated
 from .analyzer import PageAnalyzer
 
 
-def analyze_pages(input_dir: Annotated[Path, typer.Option(None,
-                                                          exists=True,
-                                                          file_okay=False,
-                                                          dir_okay=True,
-                                                          readable=True
-                                                          )],
-                  diag_dir_out: Annotated[Path, typer.Option(None,
-                                                             file_okay=False,
-                                                             dir_okay=True,
-                                                             writable=True)],
-
-                  # make_debug_plots: bool = False,  # Annotated[bool, typer.Option("--debug-plots")] = False,
-                  debug_plots: bool = False,  # Annotated[bool, typer.Option(False, "--debug-plots")],
-                  page_loader_glob: str = "*",
-                  ):
+def analyze_pages(
+    input_dir: Annotated[
+        Path,
+        typer.Option(
+            None, exists=True, file_okay=False, dir_okay=True, readable=True
+        ),
+    ],
+    diag_dir_out: Annotated[
+        Path, typer.Option(None, file_okay=False, dir_okay=True, writable=True)
+    ],
+    # make_debug_plots: bool = False,  # Annotated[bool, typer.Option("--debug-plots")] = False,
+    debug_plots: bool = False,  # Annotated[bool, typer.Option(False, "--debug-plots")],
+    page_loader_glob: str = "*",
+):
     """
 
     :param input_dir:
@@ -38,13 +37,14 @@ def analyze_pages(input_dir: Annotated[Path, typer.Option(None,
         debug_plots=debug_plots,
         page_loader_glob=page_loader_glob,
         rm_diag=True,
-
     )
 
     OUT_DIR = Path(diag_dir_out)
 
     if OUT_DIR.exists():
-        print("Destination exists already, do you want to override? (delete all current cont)")
+        print(
+            "Destination exists already, do you want to override? (delete all current cont)"
+        )
         resp = input("override? [y/N]")
         if resp == "y":
             shutil.rmtree(OUT_DIR)
