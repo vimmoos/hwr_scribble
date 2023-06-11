@@ -22,6 +22,10 @@ class WordLoader:
 
     imread_mode: int = cv2.IMREAD_GRAYSCALE
 
+    @classmethod
+    def from_path(cls, path: Path):
+        return cls(path)
+
     def load_img(self, path):
         img = cv2.imread(str(path), self.imread_mode)
         return self.load_tx(img) if self.load_tx is not None else img

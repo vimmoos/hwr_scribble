@@ -19,20 +19,23 @@ from hwr.types import Word
 from hwr.utils import dss_charset
 from hwr.utils.misc import sel_keys
 
+WordsPager = Callable[[Iterable[Word]], Generator[Page, None, None]]
+
+# --- Word stream transformer (word-stream -> word-stream)---
+WordStreamProcessor = Callable[[Iterable[Word]], Generator[Word, None, None]]
+
 
 @dataclass
-class WordProcessor:
+class SimpleWordStreamProc:
     core: Callable[[NDArray], Tuple[List[int], Any]]
 
-    def __call__(self, w: Word) -> Word:
-        w.labels, w.meta = self.core(w.img)
-        return w
+    def __call__(self, stream: Iterable[Word]) -> Generator[Word, None, None]:
+        for word in stream:
+            word.labels, word.meta = self.core(word.img)
+            yield word
 
 
-def process_words_stream(wp: WordProcessor, stream: Iterable[Word]) -> Generator[Word, None, None]:
-    return (wp(word) for word in stream)
-
-
+#  --- Word stream aggregator (word-stream -> page-stream)---
 def word_stream_to_pages(processed_stream: Iterable[Word]) -> Generator[Page, None, None]:
     """Convert a stream of Word objects to a stream of Page objects.
 
@@ -70,6 +73,26 @@ def write_page(page: Page, into_dir: Path):
     return dest
 
 
+import shutil
+
+
+@dataclass
+class UnicodePageWriter:
+    out_dir: Path
+    rm_dest: bool = True
+
+    def __call__(self, page_stream: Iterable[Page]) -> None:
+        if self.rm_dest and self.out_dir.exists():
+            print("Deleting old contents")
+            shutil.rmtree(self.out_dir)
+
+        self.out_dir.mkdir(exist_ok=False)
+
+        for page in page_stream:
+            print("Wrting page:", page.pagename)
+            write_page(page, self.out_dir)
+
+
 #  --- test for limit pages ---
 # wll_test = WordLoader(
 #     Path("./data/all_pages/"),
@@ -93,7 +116,6 @@ class WordProcCore0:
     def __call__(self, X: NDArray) -> Tuple[List[int], Any]:
         ret = get_chars2(X, self.model, self.window_tx, torch_device=self.torch_device)
         pred_y = [r["class"] for r in ret]
-        # pred_names = [CLASS_NAMES[y] for y in pred_y]
         return pred_y, [sel_keys(r, self.meta_keys) for r in ret]
 
 
@@ -101,9 +123,12 @@ if __name__ == "__main__":
     DEVICE = "cuda"
     from pprint import pprint
 
+    # 0-0.5 -> pages.d (diag_path)
+
     # 1. Create a word loader
     wll = WordLoader(
-        Path("./data/all_pages/"),
+        # Path("./data/all_pages/"),
+        Path("./data/debug_pages/"),
         load_tx=partial(vizutils.resize_height, new_height=84),
     )
 
@@ -112,14 +137,17 @@ if __name__ == "__main__":
     model.to(DEVICE)
 
     # 3. create a word-processror with the appropriate core
-    wp = WordProcessor(core=WordProcCore0(model=model, window_tx=clf_tx, torch_device=DEVICE))
+    wsp = SimpleWordStreamProc(core=WordProcCore0(model=model, window_tx=clf_tx, torch_device=DEVICE))
 
     # 4. pick a sample of words for the test
     words = limit_pages(wll, 1)
 
-    processed_words = process_words_stream(wp, words)
+    # 5. create the stream of processed words
+    processed_words_stream = wsp(words)
+    # 6. Aggregate the word stream into pages
+    page_stream = word_stream_to_pages(processed_words_stream)
     # force realization of all pages
-    pages = list(word_stream_to_pages(processed_words))
+    pages = list(page_stream)
 
     first_page = pages[0]
 
@@ -127,9 +155,5 @@ if __name__ == "__main__":
     pprint(first_page.decode(dss_charset.y_to_unicode.__getitem__))
     print(first_page.to_string(dss_charset.y_to_unicode.__getitem__))
 
-    pages_out = Path("./results")
-    if not pages_out.exists():
-        pages_out.mkdir()
-
-    for page in pages:
-        write_page(page, pages_out)
+    pwriter = UnicodePageWriter(Path("./results"), rm_dest=True)
+    pwriter(pages)
