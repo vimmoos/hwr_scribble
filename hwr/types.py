@@ -51,3 +51,11 @@ class Page:
         lines = [l.to_string(decoder, sep=word_sep, char_sep=char_sep) for l in self.lines]
         lines = [l for l in lines if l]
         return sep.join(lines)
+
+
+class AnomalyError(Exception):
+    pass
+
+
+class Div0RiskError(AnomalyError):
+    pass
